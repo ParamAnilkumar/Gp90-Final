@@ -13,55 +13,44 @@ struct MainView: View {
             ZStack {
                 LinearGradient(gradient: Gradient(colors: [Color(.systemGray6), Color(.systemGray5)]), startPoint: .top, endPoint: .bottom)
                     .edgesIgnoringSafeArea(.all)
-
+                
                 VStack {
-                    if viewModel.tasks.isEmpty {
-                        Spacer()
-                        Text("No tasks yet")
-                            .font(.title2)
-                            .foregroundColor(.gray)
-                            .padding()
-                        Spacer()
-                    } else {
-                        List {
-                            ForEach(viewModel.tasks.indices, id: \.self) { index in
-                                let task = viewModel.tasks[index]
-                                NavigationLink(destination: TaskDetailView(task: task, viewModel: viewModel)) {
-                                    HStack {
-                                        VStack(alignment: .leading, spacing: 5) {
-                                            Text(task.title)
-                                                .font(.headline)
-                                                .foregroundColor(.white)
-                                            Text(task.dueDate, style: .date)
-                                                .font(.subheadline)
-                                                .foregroundColor(.white.opacity(0.8))
-                                        }
-                                        Spacer()
-                                        Text(task.priority.rawValue)
-                                            .font(.caption)
-                                            .padding(6)
-                                            .background(priorityColors[task.priority]?.opacity(0.8) ?? .gray)
+                    List {
+                        ForEach(viewModel.tasks.indices, id: \.self) { index in
+                            let task = viewModel.tasks[index]
+                            NavigationLink(destination: TaskDetailView(task: task, viewModel: viewModel)) {
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 5) {
+                                        Text(task.title)
+                                            .font(.headline)
                                             .foregroundColor(.white)
-                                            .clipShape(Capsule())
-
-                                        Image(systemName: task.isCompleted ? "checkmark.circle.fill" : "circle")
-                                            .foregroundColor(task.isCompleted ? .green : .white.opacity(0.8))
+                                        Text(task.dueDate, style: .date)
+                                            .font(.subheadline)
+                                            .foregroundColor(.white.opacity(0.8))
                                     }
-                                    .padding()
-                                    .background(RoundedRectangle(cornerRadius: 10).fill(priorityColors[task.priority] ?? .gray).shadow(radius: 3))
+                                    Spacer()
+                                    Text(task.priority.rawValue)
+                                        .font(.caption)
+                                        .padding(6)
+                                        .background(priorityColors[task.priority]?.opacity(0.8) ?? .gray)
+                                        .foregroundColor(.white)
+                                        .clipShape(Capsule())
+
+                                    Image(systemName: task.isCompleted ? "checkmark.circle.fill" : "circle")
+                                        .foregroundColor(task.isCompleted ? .green : .white.opacity(0.8))
                                 }
-                                .transition(.slide)
-                                .animation(.easeInOut, value: viewModel.tasks)
-                            }
-                            .onMove(perform: viewModel.moveTask)
-                            .onDelete { indexSet in
-                                indexSet.map { viewModel.tasks[$0] }.forEach(viewModel.deleteTask)
+                                .padding()
+                                .background(RoundedRectangle(cornerRadius: 10).fill(priorityColors[task.priority] ?? .gray).shadow(radius: 3))
                             }
                         }
-                        .listStyle(PlainListStyle())
-                        .toolbar {
-                            EditButton()
+                        .onMove(perform: viewModel.moveTask)
+                        .onDelete { indexSet in
+                            indexSet.map { viewModel.tasks[$0] }.forEach(viewModel.deleteTask)
                         }
+                    }
+                    .listStyle(PlainListStyle())
+                    .toolbar {
+                        EditButton()
                     }
                 }
 

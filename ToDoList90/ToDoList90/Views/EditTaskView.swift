@@ -3,10 +3,12 @@ import SwiftUI
 struct EditTaskView: View {
     @Environment(\.presentationMode) var presentationMode
     @ObservedObject var viewModel: TaskViewModel
+
     @State private var title: String
     @State private var description: String
     @State private var dueDate: Date
     @State private var priority: TaskPriority
+
     var task: Task
 
     init(task: Task, viewModel: TaskViewModel) {
@@ -47,6 +49,7 @@ struct EditTaskView: View {
                     Button("Save") {
                         saveTask()
                     }
+                    .disabled(title.isEmpty)
                 }
             }
         }

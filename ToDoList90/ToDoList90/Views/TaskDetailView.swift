@@ -5,6 +5,7 @@ struct TaskDetailView: View {
     var task: Task
     @ObservedObject var viewModel: TaskViewModel
     @State private var showingEditTask = false
+    @State private var isCompleted = false
 
     let priorityColors: [TaskPriority: Color] = [
         .high: .red, .medium: .orange, .low: .green
@@ -25,10 +26,10 @@ struct TaskDetailView: View {
                             .foregroundColor(.white)
                             .clipShape(Capsule())
                     }
-                    
+
                     Text(task.description)
                         .padding(.top, 2)
-                    
+
                     HStack {
                         Text("Due Date:")
                         Spacer()
@@ -36,21 +37,21 @@ struct TaskDetailView: View {
                             .foregroundColor(.gray)
                     }
                 }
-                
+
                 Section {
                     Button(action: {
                         markTaskAsCompleted()
                     }) {
-                        Text(task.isCompleted ? "Task Completed" : "Complete Task")
+                        Text(isCompleted || task.isCompleted ? "Task Completed" : "Complete Task")
                             .frame(maxWidth: .infinity, alignment: .center)
                             .foregroundColor(.white)
                             .padding()
-                            .background(task.isCompleted ? Color.gray : Color.green)
+                            .background((isCompleted || task.isCompleted) ? Color.gray : Color.green)
                             .cornerRadius(10)
                     }
-                    .disabled(task.isCompleted)
+                    .disabled(isCompleted || task.isCompleted)
                 }
-                
+
                 Section {
                     Button("Delete Task", role: .destructive) {
                         viewModel.deleteTask(task)
@@ -70,12 +71,15 @@ struct TaskDetailView: View {
                 EditTaskView(task: task, viewModel: viewModel)
             }
         }
+        .onAppear {
+            isCompleted = task.isCompleted
+        }
     }
-    
+
     func markTaskAsCompleted() {
         var updatedTask = task
         updatedTask.isCompleted = true
         viewModel.updateTask(updatedTask)
-        presentationMode.wrappedValue.dismiss()
+        isCompleted = true
     }
 }
